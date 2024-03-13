@@ -8,12 +8,8 @@ axios.defaults.params = {
   client_id: API_KEY,
 };
 
-export const getPhotos = async () => {
-  const { data } = await axios.get(`photos`);
-  return data;
-};
-
-export const getPhotosByQuery = async (query, page) => {
+export const getPhotos = async (query, page) => {
+  // data- массив объектов с данными с backend
   const { data } = await axios.get(`search/photos?query=${query}&page=${page}`);
   return data;
 };

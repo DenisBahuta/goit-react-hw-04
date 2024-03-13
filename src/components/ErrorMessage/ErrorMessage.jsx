@@ -3,7 +3,7 @@ const ErrorMessage = ({ message = "" }) => {
     <p>
       {message.length > 0
         ? message
-        : "Whoops, something went wrong! Please try reloading this page!"}
+        : "❌ Whoops, something went wrong! Please try reloading this page!"}
     </p>
   );
 };

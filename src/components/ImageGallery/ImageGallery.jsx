@@ -1,21 +1,20 @@
-const ImageGallery = ({ images = null }) => {
+import ImageCard from "../ImageCard/ImageCard";
+
+const ImageGallery = ({ images, handleOpen }) => {
   return (
     <ul>
-      {images !== null &&
-        Array.isArray(images) &&
-        images.map((image) => {
-          return (
-            <li key={image.id}>
-              <img width={250} src={image.thumbnail} alt={image.title} />
-              <h3>Image: {image.title}</h3>
-              <p>{image.description}</p>
-              <div>
-                <span>Brand: {image.brand}</span>
-                <span>Price: ${image.price}</span>
-              </div>
-            </li>
-          );
-        })}
+      <li>
+        {images.map(({ id, color, description, likes, urls }) => (
+          <ImageCard
+            key={id}
+            color={color}
+            description={description}
+            likes={likes}
+            urls={urls}
+            handleOpen={handleOpen}
+          />
+        ))}
+      </li>
     </ul>
   );
 };

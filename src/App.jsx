@@ -1,65 +1,88 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar/SearchBar";
+import toast, { Toaster } from "react-hot-toast";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import Loader from "./components/Loader/Loader";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-import { getPhotos, getPhotosByQuery } from "./services/images-api";
+import { getPhotos } from "./services/images-api";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "./components/ImageModal/ImageModal";
 
 function App() {
-  const [images, setImages] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(null);
+  const [query, setQuery] = useState("");
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false); // Loader
+  const [error, setError] = useState(null); // ErrorMessage
+  const [page, setPage] = useState(1);
+  const [visible, setVisible] = useState(false); // LoadMoreBtn
+  const [showModal, setShowModal] = useState(false);
+  const [modalUrl, setModalUrl] = useState("");
+  const [modalAlt, setModalAlt] = useState("");
 
   useEffect(() => {
-    async function fetchImages() {
+    if (!query) return;
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        // 1. Встановлюємо індикатор в true перед запитом
-        setLoading(true);
-        const data = await getPhotos();
-
-        setImages(data.data);
+        const { results, total, total_pages } = await getPhotos(query, page);
+        if (page >= total_pages) {
+          setVisible(false); // прячем кнопку
+          return;
+        }
+        setImages((prevState) => [...prevState, ...results]);
+        setVisible(page < Math.ceil(total / total_pages));
       } catch (error) {
-        // Встановлюємо стан error в true
-        setError(true);
+        setError(error);
+        toast.error("Can't be empty!");
       } finally {
         setLoading(false);
       }
-    }
+    };
+    fetchData();
+  }, [query, page]);
 
-    fetchImages();
-  }, []); //query, page- параметры в массиве зависимостей
+  const handleSubmit = (value) => {
+    setQuery(value);
+    setImages([]);
+    setPage(1);
+    setError(false);
+    setVisible(false);
+  };
 
-  useEffect(() => {
-    if (searchQuery === null) return;
+  const loadMore = () => {
+    setPage((prevState) => prevState + 1);
+  };
 
-    async function fetchImagesByQuery() {
-      try {
-        setLoading(true);
-        const data = await getPhotosByQuery(searchQuery);
-
-        setImages(data.data);
-      } catch (err) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchImagesByQuery();
-  }, [searchQuery]);
-
-  const onSetSearchQuery = (query) => {
-    setSearchQuery(query);
+  const handleOpen = (urls, description) => {
+    setShowModal(true);
+    setModalUrl(urls.regular); // Используем версию regular для модального окна
+    setModalAlt(description);
+  };
+  const handleClose = () => {
+    setShowModal(false);
+    setModalUrl("");
+    setModalAlt("");
   };
 
   return (
     <div>
-      <SearchBar onSetSearchQuery={onSetSearchQuery} />
+      <SearchBar onSubmit={handleSubmit} />
+      <Toaster position='top-center' reverseOrder={false} />
+      {visible && (
+        <LoadMoreBtn onClick={loadMore} disabled={loading}>
+          {loading ? "Loading" : "Load More"}
+        </LoadMoreBtn>
+      )}
+      <ImageGallery images={images} handleOpen={handleOpen} />
       {loading && <Loader />}
-      {error && <ErrorMessage />}
-      <ImageGallery images={images} />
+      {error && <ErrorMessage />}{" "}
+      <ImageModal
+        modalIsOpen={showModal}
+        closeModal={handleClose}
+        urls={modalUrl}
+        alt={modalAlt}
+      />
     </div>
   );
 }

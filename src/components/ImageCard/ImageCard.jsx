@@ -1,7 +1,9 @@
-const ImageCard = (photo) => {
-  <div>
-    <img src={photo.urls.small} alt={photo.description} />
-  </div>;
+const ImageCard = ({ description, urls, handleOpen }) => {
+  return (
+    <div onClick={() => handleOpen(urls, description)}>
+      <img src={urls.small} alt={description} />
+    </div>
+  );
 };
 
 export default ImageCard;
