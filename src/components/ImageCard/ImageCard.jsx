@@ -1,6 +1,8 @@
+import css from "./ImageCard.module.css";
+
 const ImageCard = ({ description, urls, handleOpen }) => {
   return (
-    <div onClick={() => handleOpen(urls, description)}>
+    <div className={css.card} onClick={() => handleOpen(urls, description)}>
       <img src={urls.small} alt={description} />
     </div>
   );

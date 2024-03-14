@@ -69,14 +69,14 @@ function App() {
     <div>
       <SearchBar onSubmit={handleSubmit} />
       <Toaster position='top-center' reverseOrder={false} />
+      <ImageGallery images={images} handleOpen={handleOpen} />
+      {loading && <Loader />}
+      {error && <ErrorMessage />}
       {visible && (
         <LoadMoreBtn onClick={loadMore} disabled={loading}>
           {loading ? "Loading" : "Load More"}
         </LoadMoreBtn>
       )}
-      <ImageGallery images={images} handleOpen={handleOpen} />
-      {loading && <Loader />}
-      {error && <ErrorMessage />}{" "}
       <ImageModal
         modalIsOpen={showModal}
         closeModal={handleClose}

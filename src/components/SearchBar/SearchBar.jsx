@@ -1,38 +1,37 @@
 import { IoIosSearch } from "react-icons/io";
-import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Formik, Form, Field } from "formik";
+import css from "./SearchBar.module.css";
 
 const SearchBar = ({ onSubmit }) => {
-  const [query, setQuery] = useState("");
-  const handleChange = (event) => {
-    setQuery(event.target.value);
-  };
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!query.trim()) {
+  const handleSubmit = (values, { resetForm }) => {
+    if (!values.search.trim()) {
       toast.error("Can't be empty!");
       return;
     }
-    onSubmit(query);
-    setQuery("");
+    onSubmit(values.search);
+    resetForm();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        name='search'
-        required
-        type='text'
-        autoComplete='off'
-        autoFocus
-        placeholder='Search images and photos'
-        onChange={handleChange}
-        value={query}
-      />
-      <button type='submit'>
-        <IoIosSearch size='16px' />
-      </button>
-    </form>
+    <div className={css.formContainer}>
+      <Formik initialValues={{ search: "" }} onSubmit={handleSubmit}>
+        <Form className={css.form}>
+          <Field
+            className={css.formInput}
+            type='text'
+            name='search'
+            autoComplete='off'
+            autoFocus
+            placeholder='Search images and photos'
+            required
+          />
+          <button className={css.formBtn} type='submit'>
+            <IoIosSearch size='16px' />
+          </button>
+        </Form>
+      </Formik>
+    </div>
   );
 };
 
