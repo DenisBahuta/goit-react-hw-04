@@ -2,6 +2,7 @@ import { IoIosSearch } from "react-icons/io";
 import { toast } from "react-hot-toast";
 import { Formik, Form, Field } from "formik";
 import css from "./SearchBar.module.css";
+import PropTypes from "prop-types";
 
 const SearchBar = ({ onSubmit }) => {
   const handleSubmit = (values, { resetForm }) => {
@@ -33,6 +34,10 @@ const SearchBar = ({ onSubmit }) => {
       </Formik>
     </div>
   );
+};
+
+SearchBar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default SearchBar;
